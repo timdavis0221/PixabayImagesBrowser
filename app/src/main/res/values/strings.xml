@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">PixabayImagesBrowser</string>
+    <string name="img_loading_circle">image loading circle</string>
+    <string name="img_load_more">Load more</string>
+    <string name="img_id">image id</string>
+    <string name="btn_name">Search</string>
+    <string name="placeholder">Search Images (format: japan+fun)</string>
+</resources>
