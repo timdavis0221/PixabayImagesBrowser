@@ -3,7 +3,9 @@ package com.pixabay.activities;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SnapHelper;
 import android.util.Log;
 
 import com.pixabay.R;
@@ -31,6 +33,10 @@ public class BrowserActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.main_recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
+
+        /*SnapHelper snapHelper = new LinearSnapHelper();
+        snapHelper.attachToRecyclerView(recyclerView);*/
+//        new SnapHelper().attachToRecyclerView(recyclerView);
     }
 
     @Override

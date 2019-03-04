@@ -1,5 +1,6 @@
 package com.pixabay.adapters;
 
+import android.annotation.TargetApi;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.pixabay.R;
+import com.pixabay.activities.BrowserActivity;
 import com.pixabay.data.Image;
 import com.pixabay.net.ImageDownLoader;
 
@@ -20,6 +22,7 @@ public class PixabayRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     private final String TAG = getClass().getSimpleName();
     private SparseArray<Image> imageSparseArray;
+    private ViewGroup parentView;
 
     private enum ITEMVIEW_TYPE{
         IMAGE,
@@ -56,6 +59,7 @@ public class PixabayRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parentView, int viewType) {
 
+        this.parentView = parentView;
         RecyclerView.ViewHolder viewHolder = null;
 
         if(viewType == ITEMVIEW_TYPE.FOOTER.ordinal()){
@@ -72,11 +76,14 @@ public class PixabayRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         return viewHolder;
     }
 
+    @TargetApi(21)
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         if(viewHolder instanceof PixabayViewHolder){
 
             PixabayViewHolder pixabayViewHolder = (PixabayViewHolder) viewHolder;
+            pixabayViewHolder.pixabayImageView.setImageDrawable(parentView.getContext()
+                    .getDrawable(R.drawable.loading_circle));
 
             Log.d(TAG, "onBindViewHolder: item view's Tag: " +
                     pixabayViewHolder.pixabayImageView.getTag() +
@@ -85,8 +92,10 @@ public class PixabayRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             pixabayViewHolder.pixabayImageId.setText(imageSparseArray.get(position).getId());
             pixabayViewHolder.pixabayImageView.setTag(imageSparseArray.get(position).getPreviewURL());
 
-            new ImageDownLoader(pixabayViewHolder.pixabayImageView).
-                    execute(imageSparseArray.get(position).getPreviewURL().toString());
+            ImageDownLoader imageDownLoader = new ImageDownLoader(pixabayViewHolder.pixabayImageView);
+            pixabayViewHolder.pixabayImageView.setTag(R.id.itemView_Image1, imageDownLoader);
+            imageDownLoader.execute(imageSparseArray.get(position).getPreviewURL().toString());
+
         }
         else{
             // custom footer view
@@ -94,7 +103,8 @@ public class PixabayRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull List<Object> payloads) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position,
+                                 @NonNull List<Object> payloads) {
         super.onBindViewHolder(holder, position, payloads);
     }
 
@@ -120,6 +130,10 @@ public class PixabayRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         if(holder instanceof PixabayViewHolder){
             Log.d(TAG, "onViewRecycled: position " + holder.getAdapterPosition() + "," +
                     " TAG : " + ((PixabayViewHolder) holder).pixabayImageView.getTag() + " be recycled");
+
+            ImageDownLoader imageDownLoadTask = (ImageDownLoader) ((PixabayViewHolder) holder)
+                    .pixabayImageView.getTag(R.id.itemView_Image1);
+            imageDownLoadTask.cancel(true);
         }
         else
             Log.d(TAG, "onViewRecycled: position " + holder.getAdapterPosition() + " (footer view)");

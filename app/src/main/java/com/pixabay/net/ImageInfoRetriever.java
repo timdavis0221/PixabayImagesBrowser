@@ -70,8 +70,9 @@ public class ImageInfoRetriever extends AsyncTask<String, Void, Void>{
     @Override
     protected void onPostExecute(Void values) {
         super.onPostExecute(values);
-        pixabayRecyclerAdapter = new PixabayRecyclerAdapter(imagesArray);
         browserActivity = browserActivityWeakReference.get();
+
+        pixabayRecyclerAdapter = new PixabayRecyclerAdapter(imagesArray);
         browserActivity.getRecyclerView().setAdapter(pixabayRecyclerAdapter);
     }
 
